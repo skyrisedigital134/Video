@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="SkyRise Digital — We craft digital experiences that elevate brands. Web Design, Development, E-Commerce, UI/UX & SEO." />
+  <title>SkyRise Digital — Web Agency</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syncopate:wght@400;700&family=DM+Sans:wght@200;300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --gold-dim: #7A5C1E;
+      --gold-glow: rgba(201,168,76,0.18);
+      --black: #060606;
+      --black-2: #0E0E0E;
+      --black-3: #141414;
+      --white: #F5F0E8;
+      --white-dim: rgba(245,240,232,0.5);
+      --serif: 'Cormorant Garamond', serif;
+      --sans: 'DM Sans', sans-serif;
+      --display: 'Syncopate', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--sans);
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── CURSOR ── */
+    #cursor {
+      position: fixed; width: 10px; height: 10px;
+      background: var(--gold); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width .25s, height .25s, background .25s;
+    }
+    #cursor-ring {
+      position: fixed; width: 38px; height: 38px;
+      border: 1px solid var(--gold); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: transform .12s ease, width .25s, height .25s, opacity .3s;
+      opacity: 0.6;
+    }
+    body:hover #cursor { opacity: 1; }
+
+    /* ── LOADER ── */
+    #loader {
+      position: fixed; inset: 0; background: var(--black);
+      z-index: 9000; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 2rem;
+    }
+    #loader .loader-logo {
+      font-family: var(--display); font-size: clamp(1rem, 3vw, 1.5rem);
+      letter-spacing: 0.4em; color: var(--gold);
+      opacity: 0; animation: fadeIn 0.8s 0.3s forwards;
+    }
+    #loader-bar-wrap {
+      width: min(320px, 60vw); height: 1px; background: rgba(201,168,76,0.2);
+      position: relative; overflow: hidden;
+    }
+    #loader-bar {
+      position: absolute; left: 0; top: 0; height: 100%;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold-light));
+      width: 0; animation: loadBar 2s 0.5s cubic-bezier(.77,0,.18,1) forwards;
+    }
+    #loader-pct {
+      font-family: var(--display); font-size: 0.65rem;
+      letter-spacing: 0.3em; color: var(--gold-dim);
+      opacity: 0; animation: fadeIn 0.5s 0.6s forwards;
+    }
+    @keyframes loadBar { to { width: 100%; } }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 800;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.8rem 4vw;
+      mix-blend-mode: normal;
+      transition: background 0.4s;
+    }
+    nav.scrolled { background: rgba(6,6,6,0.92); backdrop-filter: blur(12px); }
+    .nav-logo img {
+      height: 36px; object-fit: contain;
+      filter: brightness(1.1) drop-shadow(0 0 8px var(--gold-dim));
+    }
+    .nav-logo-text {
+      font-family: var(--display); font-size: 0.8rem;
+      letter-spacing: 0.35em; color: var(--gold);
+    }
+    .nav-links {
+      display: flex; gap: 3rem; list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--display); font-size: 0.6rem;
+      letter-spacing: 0.25em; color: var(--white-dim);
+      text-decoration: none; text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      font-family: var(--display); font-size: 0.6rem;
+      letter-spacing: 0.2em; color: var(--gold);
+      border: 1px solid var(--gold-dim); padding: 0.65rem 1.4rem;
+      text-decoration: none; text-transform: uppercase;
+      transition: background 0.3s, color 0.3s;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { background: var(--gold); color: var(--black); }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-hamburger span { display: block; width: 24px; height: 1px; background: var(--gold); }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative; height: 100vh; width: 100%;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    #hero-video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 0;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom,
+        rgba(6,6,6,0.45) 0%,
+        rgba(6,6,6,0.3) 40%,
+        rgba(6,6,6,0.7) 80%,
+        var(--black) 100%);
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center; padding: 0 5vw;
+    }
+    .hero-eyebrow {
+      font-family: var(--display); font-size: 0.6rem;
+      letter-spacing: 0.5em; color: var(--gold);
+      margin-bottom: 2rem; opacity: 0;
+      animation: slideUp 1s 2.8s cubic-bezier(.16,1,.3,1) forwards;
+    }
+    .hero-title {
+      font-family: var(--serif); font-size: clamp(3.5rem, 9vw, 8.5rem);
+      font-weight: 300; line-height: 0.95;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      animation: slideUp 1.2s 3s cubic-bezier(.16,1,.3,1) forwards;
+    }
+    .hero-title em {
+      font-style: italic; color: var(--gold);
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold-light), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-family: var(--sans); font-size: clamp(0.85rem, 1.5vw, 1rem);
+      font-weight: 200; color: var(--white-dim); letter-spacing: 0.1em;
+      max-width: 540px; margin: 2.5rem auto 0;
+      opacity: 0; animation: slideUp 1s 3.3s cubic-bezier(.16,1,.3,1) forwards;
+    }
+    .hero-scroll {
+      position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%);
+      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+      opacity: 0; animation: fadeIn 1s 4s forwards;
+    }
+    .hero-scroll span {
+      font-family: var(--display); font-size: 0.5rem;
+      letter-spacing: 0.4em; color: var(--gold-dim);
+    }
+    .scroll-line {
+      width: 1px; height: 60px; background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      overflow: hidden; border-top: 1px solid rgba(201,168,76,0.15);
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      padding: 1.2rem 0; background: var(--black-2);
+    }
+    .marquee-track {
+      display: flex; gap: 4rem; width: max-content;
+      animation: marquee 20s linear infinite;
+    }
+    .marquee-track span {
+      font-family: var(--display); font-size: 0.6rem;
+      letter-spacing: 0.3em; color: var(--gold-dim);
+      text-transform: uppercase; white-space: nowrap;
+    }
+    .marquee-track .sep { color: var(--gold); opacity: 0.5; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ── SECTIONS ── */
+    section { padding: clamp(5rem, 12vw, 10rem) 8vw; }
+    .section-label {
+      font-family: var(--display); font-size: 0.55rem;
+      letter-spacing: 0.5em; color: var(--gold); text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .section-num {
+      font-family: var(--display); font-size: 0.6rem;
+      letter-spacing: 0.3em; color: var(--gold-dim); margin-bottom: 3rem;
+    }
+
+    /* ── ABOUT ── */
+    #about { background: var(--black-2); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
+    }
+    .about-left h2 {
+      font-family: var(--serif); font-size: clamp(2.5rem, 5vw, 5rem);
+      font-weight: 300; line-height: 1.1; margin-bottom: 2.5rem;
+    }
+    .about-left h2 em { font-style: italic; color: var(--gold); }
+    .about-left p {
+      font-size: 1rem; line-height: 1.9; color: var(--white-dim);
+      max-width: 500px; margin-bottom: 1.5rem;
+    }
+    .about-right {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    }
+    .stat-box {
+      background: var(--black-3); padding: 3rem 2rem;
+      border: 1px solid rgba(201,168,76,0.08);
+      transition: border-color 0.4s, background 0.4s;
+    }
+    .stat-box:hover {
+      border-color: rgba(201,168,76,0.3);
+      background: rgba(201,168,76,0.03);
+    }
+    .stat-num {
+      font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4rem);
+      font-weight: 300; color: var(--gold); line-height: 1;
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label {
+      font-family: var(--sans); font-size: 0.75rem;
+      letter-spacing: 0.15em; color: var(--white-dim); margin-top: 0.5rem;
+    }
+
+    /* ── SERVICES ── */
+    #services { background: var(--black); }
+    .services-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 5rem; flex-wrap: wrap; gap: 2rem;
+    }
+    .services-header h2 {
+      font-family: var(--serif); font-size: clamp(2.5rem, 5vw, 5rem);
+      font-weight: 300; line-height: 1.05;
+    }
+    .services-header h2 em { font-style: italic; color: var(--gold); }
+    .services-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      border: 1px solid rgba(201,168,76,0.1);
+    }
+    .service-card {
+      padding: 3.5rem 2.5rem; background: var(--black-2);
+      border-right: 1px solid rgba(201,168,76,0.08);
+      transition: background 0.4s;
+      position: relative; overflow: hidden;
+    }
+    .service-card::before {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      transform: scaleX(0); transition: transform 0.5s;
+    }
+    .service-card:hover { background: rgba(201,168,76,0.04); }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-icon {
+      font-size: 1.8rem; margin-bottom: 2rem; display: block;
+      filter: drop-shadow(0 0 12px var(--gold-dim));
+    }
+    .service-card h3 {
+      font-family: var(--display); font-size: 0.7rem;
+      letter-spacing: 0.2em; color: var(--gold); margin-bottom: 1.2rem;
+      text-transform: uppercase;
+    }
+    .service-card p {
+      font-size: 0.9rem; line-height: 1.8; color: var(--white-dim);
+    }
+    .service-num {
+      position: absolute; top: 2rem; right: 2rem;
+      font-family: var(--display); font-size: 0.55rem;
+      letter-spacing: 0.2em; color: rgba(201,168,76,0.2);
+    }
+
+    /* ── PROCESS ── */
+    #process { background: var(--black-3); }
+    .process-intro {
+      display: grid; grid-template-columns: 1fr 2fr; gap: 6rem;
+      margin-bottom: 5rem; align-items: start;
+    }
+    .process-intro h2 {
+      font-family: var(--serif); font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 300; line-height: 1.1;
+    }
+    .process-intro h2 em { font-style: italic; color: var(--gold); }
+    .process-intro p { font-size: 1rem; line-height: 1.9; color: var(--white-dim); }
+    .process-steps { display: flex; flex-direction: column; }
+    .process-step {
+      display: grid; grid-template-columns: 80px 1fr;
+      gap: 3rem; padding: 3rem 0;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      align-items: start;
+      transition: background 0.3s;
+    }
+    .process-step:first-child { border-top: 1px solid rgba(201,168,76,0.1); }
+    .step-num {
+      font-family: var(--serif); font-size: 3.5rem; font-weight: 300;
+      color: rgba(201,168,76,0.15); line-height: 1;
+      transition: color 0.4s;
+    }
+    .process-step:hover .step-num { color: var(--gold); }
+    .step-content h3 {
+      font-family: var(--display); font-size: 0.7rem;
+      letter-spacing: 0.25em; color: var(--white); margin-bottom: 1rem;
+    }
+    .step-content p { font-size: 0.9rem; line-height: 1.8; color: var(--white-dim); }
+
+    /* ── WORK / MARQUEE DIVIDER ── */
+    .gold-divider {
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0;
+    }
+
+    /* ── CONTACT ── */
+    #contact {
+      background: var(--black);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8rem;
+      align-items: start;
+    }
+    .contact-left h2 {
+      font-family: var(--serif); font-size: clamp(2.5rem, 5vw, 5rem);
+      font-weight: 300; line-height: 1.05; margin-bottom: 2.5rem;
+    }
+    .contact-left h2 em { font-style: italic; color: var(--gold); }
+    .contact-info { display: flex; flex-direction: column; gap: 2rem; }
+    .contact-item label {
+      display: block; font-family: var(--display); font-size: 0.55rem;
+      letter-spacing: 0.4em; color: var(--gold-dim); margin-bottom: 0.5rem;
+    }
+    .contact-item a, .contact-item span {
+      font-family: var(--sans); font-size: 1.05rem; font-weight: 300;
+      color: var(--white); text-decoration: none;
+      transition: color 0.3s;
+    }
+    .contact-item a:hover { color: var(--gold); }
+    .contact-right { padding-top: 1rem; }
+    .contact-form { display: flex; flex-direction: column; gap: 1.5rem; }
+    .form-group {
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .form-group label {
+      font-family: var(--display); font-size: 0.55rem;
+      letter-spacing: 0.3em; color: var(--gold-dim);
+    }
+    .form-group input, .form-group textarea {
+      background: transparent; border: none;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      color: var(--white); font-family: var(--sans); font-size: 0.95rem;
+      font-weight: 300; padding: 0.8rem 0;
+      outline: none; resize: none; transition: border-color 0.3s;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-bottom-color: var(--gold);
+    }
+    .form-group input::placeholder, .form-group textarea::placeholder {
+      color: rgba(245,240,232,0.2);
+    }
+    .btn-submit {
+      font-family: var(--display); font-size: 0.6rem;
+      letter-spacing: 0.3em; color: var(--black);
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold-light));
+      border: none; padding: 1.1rem 2.5rem;
+      cursor: pointer; text-transform: uppercase;
+      transition: opacity 0.3s, transform 0.3s; align-self: flex-start;
+    }
+    .btn-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black-2); padding: 4rem 8vw;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(201,168,76,0.1);
+      flex-wrap: wrap; gap: 2rem;
+    }
+    .footer-logo {
+      font-family: var(--display); font-size: 0.7rem;
+      letter-spacing: 0.4em; color: var(--gold);
+    }
+    .footer-links { display: flex; gap: 2.5rem; flex-wrap: wrap; }
+    .footer-links a {
+      font-family: var(--display); font-size: 0.55rem;
+      letter-spacing: 0.25em; color: var(--white-dim);
+      text-decoration: none; text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-copy {
+      font-family: var(--sans); font-size: 0.75rem;
+      color: rgba(245,240,232,0.25); letter-spacing: 0.1em;
+    }
+
+    /* ── SOCIAL BAR ── */
+    .social-bar {
+      position: fixed; right: 2.5rem; top: 50%; transform: translateY(-50%);
+      z-index: 700; display: flex; flex-direction: column; gap: 1.5rem; align-items: center;
+    }
+    .social-bar::before {
+      content: ''; display: block; width: 1px; height: 50px;
+      background: linear-gradient(to bottom, transparent, var(--gold-dim));
+    }
+    .social-bar::after {
+      content: ''; display: block; width: 1px; height: 50px;
+      background: linear-gradient(to top, transparent, var(--gold-dim));
+    }
+    .social-bar a {
+      font-family: var(--display); font-size: 0.5rem;
+      letter-spacing: 0.2em; color: var(--gold-dim);
+      text-decoration: none; writing-mode: vertical-lr;
+      text-transform: uppercase; transition: color 0.3s;
+    }
+    .social-bar a:hover { color: var(--gold); }
+
+    /* ── REVEAL ANIMATIONS ── */
+    .reveal {
+      opacity: 0; transform: translateY(50px);
+      transition: opacity 0.9s cubic-bezier(.16,1,.3,1), transform 0.9s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.22s; }
+    .reveal-delay-3 { transition-delay: 0.34s; }
+
+    /* ── MOBILE MENU ── */
+    #mobile-menu {
+      position: fixed; inset: 0; background: var(--black);
+      z-index: 850; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3rem;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s;
+    }
+    #mobile-menu.open { opacity: 1; pointer-events: all; }
+    #mobile-menu a {
+      font-family: var(--serif); font-size: clamp(2rem, 8vw, 3.5rem);
+      font-weight: 300; color: var(--white); text-decoration: none;
+      transition: color 0.3s;
+    }
+    #mobile-menu a:hover { color: var(--gold); }
+    #menu-close {
+      position: absolute; top: 2rem; right: 4vw;
+      font-family: var(--display); font-size: 0.6rem;
+      letter-spacing: 0.3em; color: var(--gold-dim);
+      cursor: pointer;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: 4rem; }
+      .services-grid { grid-template-columns: 1fr; }
+      .process-intro { grid-template-columns: 1fr; gap: 2rem; }
+      #contact { grid-template-columns: 1fr; gap: 4rem; }
+      .nav-links, .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+      .social-bar { display: none; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 600px) {
+      .about-right { grid-template-columns: 1fr 1fr; }
+      .process-step { grid-template-columns: 50px 1fr; gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CURSOR -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-logo">SKYRISE DIGITAL</div>
+    <div id="loader-bar-wrap"><div id="loader-bar"></div></div>
+    <div id="loader-pct">LOADING</div>
+  </div>
+
+  <!-- MOBILE MENU -->
+  <div id="mobile-menu">
+    <span id="menu-close">CLOSE ✕</span>
+    <a href="#about" onclick="closeMenu()">About</a>
+    <a href="#services" onclick="closeMenu()">Services</a>
+    <a href="#process" onclick="closeMenu()">Process</a>
+    <a href="#contact" onclick="closeMenu()">Contact</a>
+  </div>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">
+      <img src="logo.png" alt="SkyRise Digital" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+      <span class="nav-logo-text" style="display:none;">SKYRISE DIGITAL</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Let's Talk</a>
+    <div class="nav-hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- SOCIAL SIDE BAR -->
+  <div class="social-bar">
+    <a href="https://instagram.com/skyrisedigital" target="_blank">Instagram</a>
+    <a href="mailto:skyrisedigital00@gmail.com">Email</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <video id="hero-video" autoplay muted loop playsinline>
+      <source src="video.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">WEB AGENCY — RUDRAPUR, INDIA</p>
+      <h1 class="hero-title">
+        We Build<br/><em>Digital</em><br/>Empires.
+      </h1>
+      <p class="hero-sub">
+        Transforming brands into unforgettable digital experiences —
+        design, development, and strategy that rise above the ordinary.
+      </p>
+    </div>
+    <div class="hero-scroll">
+      <span>SCROLL TO DISCOVER</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>WEB DESIGN</span><span class="sep">✦</span>
+      <span>WEB DEVELOPMENT</span><span class="sep">✦</span>
+      <span>E-COMMERCE</span><span class="sep">✦</span>
+      <span>UI / UX DESIGN</span><span class="sep">✦</span>
+      <span>SEO OPTIMIZATION</span><span class="sep">✦</span>
+      <span>BRAND IDENTITY</span><span class="sep">✦</span>
+      <span>DIGITAL STRATEGY</span><span class="sep">✦</span>
+      <span>WEB DESIGN</span><span class="sep">✦</span>
+      <span>WEB DEVELOPMENT</span><span class="sep">✦</span>
+      <span>E-COMMERCE</span><span class="sep">✦</span>
+      <span>UI / UX DESIGN</span><span class="sep">✦</span>
+      <span>SEO OPTIMIZATION</span><span class="sep">✦</span>
+      <span>BRAND IDENTITY</span><span class="sep">✦</span>
+      <span>DIGITAL STRATEGY</span><span class="sep">✦</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-label reveal">01 — About</div>
+    <div class="about-grid">
+      <div class="about-left">
+        <h2 class="reveal">Where Vision<br/>Meets <em>Digital</em><br/>Mastery.</h2>
+        <p class="reveal reveal-delay-1">
+          SkyRise Digital is a full-service web agency based in Rudrapur, Uttarakhand — crafting 
+          premium digital products that fuse artistic precision with technical excellence.
+        </p>
+        <p class="reveal reveal-delay-2">
+          From ambitious startups to established enterprises, we transform brands into powerful 
+          digital presences that captivate, convert, and endure.
+        </p>
+      </div>
+      <div class="about-right reveal reveal-delay-1">
+        <div class="stat-box">
+          <div class="stat-num">50+</div>
+          <div class="stat-label">Projects Delivered</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Client Satisfaction</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">5+</div>
+          <div class="stat-label">Years of Excellence</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Creative Ambition</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GOLD DIVIDER -->
+  <div class="gold-divider"></div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-label reveal">02 — Services</div>
+    <div class="services-header">
+      <h2 class="reveal">
+        What We<br/><em>Create</em> For<br/>You.
+      </h2>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <span class="service-icon">◈</span>
+        <span class="service-num">01</span>
+        <h3>Web Design</h3>
+        <p>Stunning, pixel-perfect interfaces that blend aesthetics with function — every screen designed to captivate and convert.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-1">
+        <span class="service-icon">⬡</span>
+        <span class="service-num">02</span>
+        <h3>Web Development</h3>
+        <p>Robust, scalable websites built on modern technology — fast, secure, and engineered for long-term performance.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-2">
+        <span class="service-icon">◉</span>
+        <span class="service-num">03</span>
+        <h3>E-Commerce</h3>
+        <p>Complete online stores that drive sales — intuitive shopping experiences built to maximize conversions and revenue.</p>
+      </div>
+      <div class="service-card reveal">
+        <span class="service-icon">⬟</span>
+        <span class="service-num">04</span>
+        <h3>UI / UX Design</h3>
+        <p>Human-centered design rooted in research — interfaces that feel instinctive, look beautiful, and perform flawlessly.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-1">
+        <span class="service-icon">◎</span>
+        <span class="service-num">05</span>
+        <h3>SEO Optimization</h3>
+        <p>Data-driven strategies that push your brand to the top — organic growth that compounds into lasting digital authority.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-2">
+        <span class="service-icon">✦</span>
+        <span class="service-num">06</span>
+        <h3>Brand Identity</h3>
+        <p>Complete visual identities that resonate — logos, typography, and systems built to make your brand unforgettable.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="section-label reveal">03 — Process</div>
+    <div class="process-intro">
+      <h2 class="reveal">
+        How We<br/><em>Rise</em><br/>Together.
+      </h2>
+      <p class="reveal reveal-delay-1">
+        Every project follows a refined methodology — four precise phases that transform your vision 
+        into a digital reality, on time and beyond expectation.
+      </p>
+    </div>
+    <div class="process-steps">
+      <div class="process-step reveal">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3>DISCOVER &amp; DEFINE</h3>
+          <p>Deep discovery sessions to understand your brand, goals, audience, and competitive landscape. We build the strategic blueprint before a single pixel is placed.</p>
+        </div>
+      </div>
+      <div class="process-step reveal reveal-delay-1">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3>DESIGN &amp; CONCEPTUALISE</h3>
+          <p>Wireframes evolve into high-fidelity designs — each interaction crafted with intention, each layout built to guide and convert.</p>
+        </div>
+      </div>
+      <div class="process-step reveal reveal-delay-2">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3>BUILD &amp; ENGINEER</h3>
+          <p>Clean, performant code brings the designs to life — responsive across all devices, optimized for speed, and built to scale.</p>
+        </div>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h3>LAUNCH &amp; ELEVATE</h3>
+          <p>Precision deployment followed by ongoing support, SEO integration, and continuous optimization to keep your digital presence rising.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GOLD DIVIDER -->
+  <div class="gold-divider"></div>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div>
+      <div class="section-label reveal">04 — Contact</div>
+      <div class="contact-left">
+        <h2 class="reveal">Let's Build<br/>Something<br/><em>Remarkable.</em></h2>
+        <div class="contact-info">
+          <div class="contact-item reveal">
+            <label>Phone</label>
+            <a href="tel:+918218440133">+91 82184 40133</a>
+          </div>
+          <div class="contact-item reveal reveal-delay-1">
+            <label>Email</label>
+            <a href="mailto:skyrisedigital00@gmail.com">skyrisedigital00@gmail.com</a>
+          </div>
+          <div class="contact-item reveal reveal-delay-2">
+            <label>Website</label>
+            <a href="https://skyrisedigital.online" target="_blank">skyrisedigital.online</a>
+          </div>
+          <div class="contact-item reveal">
+            <label>Location</label>
+            <span>Rudrapur, Uttarakhand, India</span>
+          </div>
+          <div class="contact-item reveal reveal-delay-1">
+            <label>Instagram</label>
+            <a href="https://instagram.com/skyrisedigital" target="_blank">@skyrisedigital</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-right reveal reveal-delay-1">
+      <div class="form-group" style="margin-bottom:1rem;">
+        <label>— SEND A MESSAGE</label>
+      </div>
+      <div class="contact-form" id="contact-form">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" placeholder="Your full name" id="f-name" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" placeholder="your@email.com" id="f-email" />
+        </div>
+        <div class="form-group">
+          <label>Project</label>
+          <input type="text" placeholder="What are you building?" id="f-project" />
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea rows="4" placeholder="Tell us about your vision…" id="f-msg"></textarea>
+        </div>
+        <button class="btn-submit" onclick="handleSubmit()">Send Message →</button>
+        <div id="form-success" style="display:none; font-family:var(--display); font-size:0.6rem; letter-spacing:0.3em; color:var(--gold);">MESSAGE RECEIVED — WE'LL BE IN TOUCH.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">SKYRISE DIGITAL</div>
+    <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#process">Process</a>
+      <a href="#contact">Contact</a>
+      <a href="https://skyrisedigital.online" target="_blank">Website</a>
+    </div>
+    <div class="footer-copy">© 2025 SkyRise Digital. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // ── LOADER ──
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').style.opacity = '0';
+        document.getElementById('loader').style.transition = 'opacity 0.8s';
+        setTimeout(() => document.getElementById('loader').style.display = 'none', 800);
+      }, 2400);
+    });
+
+    // ── CURSOR ──
+    const cur = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animRing() {
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      cur.style.left = mx + 'px'; cur.style.top = my + 'px';
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animRing);
+    }
+    animRing();
+    document.querySelectorAll('a, button, .service-card, .process-step').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cur.style.width = '6px'; cur.style.height = '6px';
+        ring.style.width = '56px'; ring.style.height = '56px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cur.style.width = '10px'; cur.style.height = '10px';
+        ring.style.width = '38px'; ring.style.height = '38px';
+      });
+    });
+
+    // ── NAV SCROLL ──
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ── MOBILE MENU ──
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.add('open');
+    });
+    document.getElementById('menu-close').addEventListener('click', closeMenu);
+    function closeMenu() {
+      document.getElementById('mobile-menu').classList.remove('open');
+    }
+
+    // ── SCROLL REVEAL ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── FORM SUBMIT ──
+    function handleSubmit() {
+      const name = document.getElementById('f-name').value;
+      const email = document.getElementById('f-email').value;
+      if (!name || !email) { alert('Please fill in at least your name and email.'); return; }
+      const msg = `Hello, I'm ${name}. Project: ${document.getElementById('f-project').value}. ${document.getElementById('f-msg').value}`;
+      const wa = `https://wa.me/918218440133?text=${encodeURIComponent(msg)}`;
+      window.open(wa, '_blanqk');
+      document.getElementById('form-success').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
+
